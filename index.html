@@ -56,27 +56,120 @@
     padding: 10px;
   }
 
-  .card {
-    background: linear-gradient(145deg, #f7f1e3, #ede4d1, #e8dcc4);
-    border-radius: 10px;
-    border: 3px solid #8b7355;
-    box-shadow:
-      0 4px 15px rgba(0,0,0,0.3),
-      inset 0 1px 0 rgba(255,255,255,0.4);
-    overflow: hidden;
+  .card-container {
+    perspective: 1000px;
     cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    position: relative;
+    aspect-ratio: 3/4.5;
   }
 
-  .card:hover {
-    transform: translateY(-6px) scale(1.02);
-    box-shadow:
-      0 12px 30px rgba(0,0,0,0.4),
-      inset 0 1px 0 rgba(255,255,255,0.4);
-    border-color: #6d5a3a;
+  .card-container:hover .card-inner {
+    box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+  }
+
+  .card-container:hover .card-inner:not(.flipped) {
+    transform: rotateY(15deg);
+  }
+
+  .card-container:hover .card-inner.flipped {
+    transform: rotateY(195deg);
+  }
+
+  .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.7s cubic-bezier(0.4, 0.0, 0.2, 1), box-shadow 0.3s ease;
+    transform-style: preserve-3d;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  }
+
+  .card-inner.flipped {
+    transform: rotateY(180deg);
+  }
+
+  .card-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 10px;
+    border: 3px solid #8b7355;
+    overflow: hidden;
+  }
+
+  .card-face-back {
+    background: linear-gradient(145deg, #5a1a2a, #3a0a1a, #4a1525);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+
+  .card-face-back .back-pattern {
+    position: absolute;
+    inset: 8px;
+    border: 2px solid #c4a86e;
+    border-radius: 6px;
+    opacity: 0.6;
+  }
+
+  .card-face-back .back-pattern-inner {
+    position: absolute;
+    inset: 14px;
+    border: 1px solid #c4a86e;
+    border-radius: 4px;
+    opacity: 0.4;
+  }
+
+  .card-face-back .back-emblem {
+    position: relative;
+    z-index: 1;
+    width: 70px;
+    height: 70px;
+  }
+
+  .card-face-back .back-title {
+    position: relative;
+    z-index: 1;
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 0.9rem;
+    color: #d4a853;
+    letter-spacing: 3px;
+    margin-top: 10px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  }
+
+  .card-face-back .back-subtitle {
+    position: relative;
+    z-index: 1;
+    font-family: 'Lora', serif;
+    font-size: 0.55rem;
+    color: #c4a86e;
+    opacity: 0.7;
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+
+  .card-face-back .corner-ornament {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    opacity: 0.5;
+  }
+
+  .card-face-back .corner-ornament.tl { top: 18px; left: 18px; }
+  .card-face-back .corner-ornament.tr { top: 18px; right: 18px; transform: scaleX(-1); }
+  .card-face-back .corner-ornament.bl { bottom: 18px; left: 18px; transform: scaleY(-1); }
+  .card-face-back .corner-ornament.br { bottom: 18px; right: 18px; transform: scale(-1); }
+
+  .card-face-front {
+    background: linear-gradient(145deg, #f7f1e3, #ede4d1, #e8dcc4);
+    transform: rotateY(180deg);
+    display: flex;
+    flex-direction: column;
   }
 
   .card-title {
@@ -92,7 +185,8 @@
 
   .card-image {
     width: 100%;
-    aspect-ratio: 4/3;
+    flex: 1;
+    min-height: 0;
     overflow: hidden;
     border-top: 2px solid #c4a86e;
     border-bottom: 2px solid #c4a86e;
@@ -118,10 +212,10 @@
     font-family: 'Lora', serif;
     font-size: 0.68rem;
     line-height: 1.4;
-    padding: 0 10px 12px;
+    padding: 0 10px 10px;
     color: #4a3728;
     text-align: left;
-    flex: 1;
+    overflow: hidden;
   }
 
   /* Modal */
@@ -243,6 +337,43 @@
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
+  @keyframes breathe {
+    0%, 100% { box-shadow: 0 4px 15px rgba(0,0,0,0.3), 0 0 0 0 rgba(196,168,110,0); }
+    50% { box-shadow: 0 4px 15px rgba(0,0,0,0.3), 0 0 15px 2px rgba(196,168,110,0.25); }
+  }
+
+  .card-inner:not(.flipped) {
+    animation: breathe 3s ease-in-out infinite;
+  }
+
+  .card-inner.flipped {
+    animation: none;
+  }
+
+  .controls {
+    text-align: center;
+    padding: 10px 0 5px;
+  }
+
+  .controls button {
+    background: linear-gradient(135deg, #c4a86e, #d4b87e);
+    border: 2px solid #8b7355;
+    color: #2c1810;
+    font-family: 'Merriweather', serif;
+    font-size: 0.85rem;
+    padding: 10px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin: 0 6px;
+  }
+
+  .controls button:hover {
+    background: linear-gradient(135deg, #d4b87e, #e4c88e);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+
   footer {
     text-align: center;
     padding: 25px 20px 15px;
@@ -276,6 +407,11 @@
   <h1>Tarjetas de Evaluación ESCP</h1>
   <p>Escala de Crecimiento Personal — Basado en el modelo de Romero García</p>
 </header>
+
+<div class="controls">
+  <button onclick="flipAll()">Revelar todas</button>
+  <button onclick="resetAll()">Ocultar todas</button>
+</div>
 
 <div class="grid" id="cardGrid"></div>
 
@@ -869,16 +1005,71 @@ const cards = [
 
 let currentIndex = 0;
 
+const cornerSvg = `<svg viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 2 Q2 15 8 20 Q2 15 2 28" stroke="#c4a86e" stroke-width="1.5" fill="none"/>
+  <path d="M2 2 Q15 2 20 8 Q15 2 28 2" stroke="#c4a86e" stroke-width="1.5" fill="none"/>
+  <circle cx="5" cy="5" r="2" fill="#c4a86e"/>
+</svg>`;
+
+const emblemSvg = `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="40" cy="40" r="35" fill="none" stroke="#c4a86e" stroke-width="2"/>
+  <circle cx="40" cy="40" r="28" fill="none" stroke="#c4a86e" stroke-width="1" opacity="0.5"/>
+  <g transform="translate(40,40)">
+    <path d="M0 -20 Q8 -10 0 0 Q-8 -10 0 -20Z" fill="#d4a853" opacity="0.8"/>
+    <path d="M0 -20 Q8 -10 0 0 Q-8 -10 0 -20Z" fill="#d4a853" opacity="0.8" transform="rotate(72)"/>
+    <path d="M0 -20 Q8 -10 0 0 Q-8 -10 0 -20Z" fill="#d4a853" opacity="0.8" transform="rotate(144)"/>
+    <path d="M0 -20 Q8 -10 0 0 Q-8 -10 0 -20Z" fill="#d4a853" opacity="0.8" transform="rotate(216)"/>
+    <path d="M0 -20 Q8 -10 0 0 Q-8 -10 0 -20Z" fill="#d4a853" opacity="0.8" transform="rotate(288)"/>
+    <circle cx="0" cy="0" r="6" fill="#d4a853"/>
+  </g>
+</svg>`;
+
 function renderCards() {
   const grid = document.getElementById('cardGrid');
   grid.innerHTML = cards.map((card, i) => `
-    <div class="card" onclick="openModal(${i})" tabindex="0" role="button" aria-label="Ver tarjeta: ${card.title}">
-      <div class="card-title">${card.title}</div>
-      <div class="card-image">${card.svg()}</div>
-      <div class="card-subtitle">${card.title}</div>
-      <div class="card-desc">${card.desc}</div>
+    <div class="card-container" data-index="${i}" tabindex="0" role="button" aria-label="Voltear tarjeta: ${card.title}">
+      <div class="card-inner" id="card-${i}">
+        <div class="card-face card-face-back">
+          <div class="back-pattern"></div>
+          <div class="back-pattern-inner"></div>
+          <div class="corner-ornament tl">${cornerSvg}</div>
+          <div class="corner-ornament tr">${cornerSvg}</div>
+          <div class="corner-ornament bl">${cornerSvg}</div>
+          <div class="corner-ornament br">${cornerSvg}</div>
+          <div class="back-emblem">${emblemSvg}</div>
+          <div class="back-title">ESCP</div>
+          <div class="back-subtitle">Toca para revelar</div>
+        </div>
+        <div class="card-face card-face-front">
+          <div class="card-title">${card.title}</div>
+          <div class="card-image">${card.svg()}</div>
+          <div class="card-subtitle">${card.title}</div>
+          <div class="card-desc">${card.desc}</div>
+        </div>
+      </div>
     </div>
   `).join('');
+
+  document.querySelectorAll('.card-container').forEach(container => {
+    container.addEventListener('click', handleCardClick);
+    container.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleCardClick.call(container, e);
+      }
+    });
+  });
+}
+
+function handleCardClick(e) {
+  const index = parseInt(this.dataset.index);
+  const inner = document.getElementById(`card-${index}`);
+
+  if (!inner.classList.contains('flipped')) {
+    inner.classList.add('flipped');
+  } else {
+    openModal(index);
+  }
 }
 
 function openModal(index) {
@@ -901,6 +1092,22 @@ function updateModal() {
   document.getElementById('modalCounter').textContent = `${currentIndex + 1} / ${cards.length}`;
 }
 
+function flipAll() {
+  cards.forEach((_, i) => {
+    setTimeout(() => {
+      document.getElementById(`card-${i}`).classList.add('flipped');
+    }, i * 100);
+  });
+}
+
+function resetAll() {
+  cards.forEach((_, i) => {
+    setTimeout(() => {
+      document.getElementById(`card-${i}`).classList.remove('flipped');
+    }, i * 100);
+  });
+}
+
 function navigate(dir) {
   currentIndex = (currentIndex + dir + cards.length) % cards.length;
   updateModal();
@@ -921,14 +1128,6 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowRight') navigate(1);
 });
 
-document.querySelectorAll('.card').forEach(card => {
-  card.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      card.click();
-    }
-  });
-});
 
 renderCards();
 </script>
